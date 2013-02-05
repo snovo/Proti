@@ -1,0 +1,15 @@
+O Chapeu De 3  Bicos
+$G,6% <O>
+$CM,1% <meu> $G,1% <cha>
+$G,2% <peu> $F,1% <tem> $E,4% <3>
+$F,1% <bi> $D,1% <cos>
+$D,2% <Tem> $E,6% <3>
+$F,1% <bi> $F,1% <cos> $G,2% <o>
+$A,2% <meu> $G,2% <cha>
+$E,2% <peu>
+$Pausa,2%
+$G,6% <Se> $CM,6% <nao> $G,6% <ti> $G,6% <ves>
+$F,3% <se> $E,4% <3> $F,4% <bi> $D,4% <cos>
+$D,2% <O> $E,2% <cha> $F,5% <peu>
+$G,5% <nao> $A,5% <era> $G,5% <meu> $C,5%
+$Repete,0%
