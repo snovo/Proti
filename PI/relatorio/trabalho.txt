@@ -1,0 +1,69 @@
+/*grava um PNM em dest em formato ascii ou nao (ascii = 1)*/
+int gravarPNM(PNM * pnm, char * dest , int ascii)
+{
+	
+	if(strlen(dest) <= 0) return EXIT_FAILURE;
+	
+	if(pnm == NULL) return EXIT_FAILURE;
+
+	char * tipo = strdup(pnm->tipo);
+	
+	/*queremos converter um binario para um ascii*/
+	/*binario*/
+	if(ascii != 1)
+	{
+		if(strcmp(tipo,P1) == 0 )
+			pnm = p1_2_p4(pnm);
+		else if(strcmp(tipo,P2) == 0 )
+			pnm = p2_2_p5(pnm);
+		else if(strcmp(tipo,P3) == 0 )
+			pnm = p3_2_p6(pnm);
+	}
+	/*ascii*/
+	else
+	{
+		if(strcmp(tipo,P4) == 0 )
+			pnm = p4_2_p1(pnm);
+		else if(strcmp(tipo,P5) == 0 )
+			pnm = p5_2_p2(pnm);
+		else if(strcmp(tipo,P6) == 0 )
+			pnm = p6_2_p3(pnm);
+	}
+	
+	writePNM(pnm, dest);
+
+	return EXIT_SUCCESS;
+}
+
+/*le um ficheiro*/
+PNM * leFich(char *path, PNM *pnm2,char * familia)
+{
+	if(pnm2 != NULL)
+	{
+		freePNM(pnm2);
+	}
+	
+	int type = fileType(path);	
+	
+	if(type == FGIF_JPG)
+		path = conv_gif_jpg(path,familia);
+	
+	type = fileType(path);
+	
+	
+	PNM * pnm;
+	
+	/*se for da familia pnm*/
+	if(type == FPNM)
+	{
+		pnm = lePNM(path);
+	}
+	/*se for do formato texto normal*/
+	else if(type == FTXT)
+		pnm = criaPMusical(path);
+		
+	else return NULL;
+		
+	return pnm;
+		
+}

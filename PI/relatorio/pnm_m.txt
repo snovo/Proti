@@ -1,0 +1,57 @@
+/*converte de P3 para P1*/
+PNM * p3_2_p1(PNM *pnm)
+{
+	PNM * temp = (PNM *)malloc(sizeof(PNM));
+	
+	int lh = 0, cl = 0, colunas = 0, linhas = 0, color = 0, cl_p3 = 0,
+		resto = 0, quoc = 0, pixel_meio = 0;
+		
+	temp->tipo = strdup(pnm->tipo);
+	temp->tipo[1] = '1';
+	
+	colunas = pnm->colunas;
+	linhas = pnm->linhas;
+	
+	temp->colunas = colunas;
+	temp->linhas = linhas;
+	
+	temp->comentarios = copiaComments(pnm->comentarios);
+	
+	pixel_meio = pixeis/2;
+	
+	temp->rep = (int **)malloc(sizeof(int *)*linhas);
+
+	for(lh = 0; lh < linhas; lh++)
+	{
+		temp->rep[lh] = (int *)malloc(sizeof(int)*colunas);
+		for(cl = 0, cl_p3 = 0; cl < colunas; cl++, cl_p3+=3)
+		{
+			color = pnm->rep[lh][cl_p3]
+				+ pnm->rep[lh][cl_p3+1]
+				+ pnm->rep[lh][cl_p3+2];
+			
+			resto = color%3;
+			quoc = color/3;
+			
+			if(resto > pixel_meio) color = quoc+1;
+			else color = quoc;
+			
+			if(color > pixel_meio) color = 0;
+			else color = 1;
+			
+			temp->rep[lh][cl] = color;
+		}
+	}
+	
+	return temp;
+}
+
+/*converte de P3 para o formato P4*/
+PNM * p3_2_p4(PNM *pnm)
+{
+	PNM *temp = p3_2_p1(pnm);
+	
+	temp->tipo[1] = '4';
+	
+	return temp;
+}

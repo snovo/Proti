@@ -1,0 +1,347 @@
+/*Funcao responsavel por ler a matriz da imagem*/
+int leRep(FILE *file, PNM *pnm)
+{
+	char c = '\a';
+	char * tipo = strdup(pnm->tipo);
+	int done = 0, cl = 0, lh = 0, colunas = 0, linhas = 0, valor = 0;
+	
+	
+	if( strcmp(tipo,P1) == 0 || strcmp(tipo,P2) == 0 || strcmp(tipo,P3) == 0)
+	{	
+		do
+		{
+			c = nextChar(file); /*lemos o 1º caracter nao branco*/
+		
+			if(c == '#')
+			{	
+				/*vamos adicionar esta linha como comentarios, pois
+				* comeca por #.*/
+				pnm->comentarios = addComment(file,pnm->comentarios,c);	
+			}
+			else
+			{				
+				if(strcmp(pnm->tipo,P3) == 0)
+					colunas = (pnm->colunas)*3;
+				else
+					colunas = (pnm->colunas);
+					
+				linhas = pnm->linhas;
+			
+				pnm->rep = (int **)realloc(pnm->rep, 
+								linhas*(sizeof(int *)) );
+		
+				for(lh = 0; lh < linhas; lh++)
+				{
+					pnm->rep[lh] = (int *)
+						malloc( colunas*sizeof(int) );
+			
+					for(cl = 0; cl < colunas; cl++)
+					{
+						if(feof(file)) return EF_EOF;
+
+						valor = retiraVal(file,c);
+						pnm->rep[lh][cl] = valor;
+						c = nextChar(file);
+					}
+				}
+			
+				done = 1;
+			}
+		}while(done == 0 && !feof(file));
+	}
+	else
+	{
+	
+		/*se inicialmente nao estamos perante um P1, P2 ou P3
+		* entao é provavel que estejamos perante um P4, P5 ou P6.
+		* Este algoritmo guarda um PNM binario como se fosse um PNM
+		* em texto corrido. É mais facil de calcular a memoria necessaria 
+		* para o armazenar. Este sistema consome mais memoria para 
+		* armazenar um P1 ou P4, pois sao os unicos que se podem
+		* compactar, os formatos P2 P3 P5 e P6 ja estao por defeito
+		* compactados*/
+		
+		c = fgetc(file); /*lemos o 1º caracter nao branco*/
+		
+		tipo = strdup(pnm->tipo);
+		
+		
+		
+		if(strcmp(tipo,P4) == 0)
+		{
+			colunas = pnm->colunas;
+					
+			linhas = pnm->linhas;
+			
+			pnm->rep = (int **)realloc(pnm->rep, 
+							linhas*(sizeof(int *)));
+
+			for(lh = 0; lh < linhas; lh++)
+			{
+				pnm->rep[lh] = (int *)
+					malloc( colunas*sizeof(int) );
+		
+				for(cl = 0; cl < colunas; cl+=8)
+				{
+					if(feof(file)) return EF_EOF;
+
+					if( c < 0 ) valor = 256 + c;
+					else valor = c;
+					
+					addValores(pnm->rep,lh,cl,
+							valor,colunas);
+						
+					c = fgetc(file);
+				}
+			}
+		
+			done = 1;
+		
+		}
+		else if(strcmp(tipo,P5) == 0 || strcmp(tipo,P6) == 0)
+		{
+			if(strcmp(tipo,P6) == 0 )
+				colunas = (pnm->colunas)*3;
+			else
+				colunas = (pnm->colunas);
+					
+			linhas = pnm->linhas;
+			
+			pnm->rep = (int **)realloc(pnm->rep, 
+							linhas*(sizeof(int *)) );
+							
+		
+			for(lh = 0; lh < linhas; lh++)
+			{
+				pnm->rep[lh] = (int *)
+					malloc( colunas*sizeof(int) );
+		
+				for(cl = 0; cl < colunas; cl++)
+				{
+					if(feof(file)) return EF_EOF;
+
+					if( c < 0 ) valor = 256 + c;
+					else valor = c;
+					
+					pnm->rep[lh][cl]=valor;
+						
+					c = fgetc(file);
+					
+				}
+			}
+		
+			done = 1;
+		}
+		else return PNM_R_FAIL;
+	}
+	
+	free(tipo);
+	return EXIT_SUCCESS;
+}
+
+
+/*le um PNM*/
+int readPNM(char * path ,PNM *pnm)
+{
+
+	int temp = -1;
+	
+	FILE * file = fopen(path,"rb");	
+	
+	if(file == NULL)
+		return EF_NULL;
+	else if( (temp = leTipo(file, pnm)) != EXIT_SUCCESS) 
+		return temp;
+	else if( (temp = leDim(file, pnm)) != EXIT_SUCCESS)
+			return temp;
+		else 	
+			if(strcmp(pnm->tipo , P1) != 0 
+				&& strcmp(pnm->tipo , P4) != 0)
+			{
+				if( (temp = leMPixel(file, pnm)) != EXIT_SUCCESS)
+					return temp;
+				else if( (temp = leRep(file, pnm)) != EXIT_SUCCESS)
+						return temp;
+			}
+			else if( (temp = leRep(file, pnm)) != EXIT_SUCCESS)
+					return temp;
+							
+	
+	
+	fclose(file);
+	
+	return EXIT_SUCCESS;
+}
+
+/*guarda um PNM em ficheiro*/
+int writePNM(PNM *pnm, char * path)
+{
+	int i = 0, cl = 0, lh = 0, colunas = 0, max_color = 0,
+		 linhas = 0, col = 0, max = 0, val = 0;
+	
+	char ch;
+	
+	char * tipo;
+	
+	int max_boolean = 0, ascii = 0, ind = 0; //falso
+	
+	int * bin;
+	
+	FILE *fp;
+	
+	/*Criacao do ficheiro path em modo escrita e binario*/
+	fp = fopen(path,"wb");
+	
+	if(fp == NULL)
+		return EF_NULL;
+		
+	tipo = strdup(pnm->tipo);
+	
+	colunas = col =  pnm->colunas;
+	linhas = pnm->linhas;
+	
+	/*caso a condicao seja verdadeira, max_boolean = 1*/
+	max_boolean = (strcmp(tipo , P1) != 0 && strcmp(tipo , P4) != 0);
+	
+	ascii = (strcmp(tipo , P1) == 0 || 
+		strcmp(tipo , P2) == 0 || strcmp(tipo , P3) == 0);
+	
+	
+	if(max_boolean == 1)
+		max_color = pnm->max_color;
+	
+	
+	
+	/*Comecemos a escrever o ficheiro*/
+	
+	/*Tipo*/
+	fprintf(fp,"%s\n",tipo);
+	
+	/*Comentarios*/
+	i = 0;
+	while(pnm->comentarios[i] != NULL)
+	{
+		fprintf(fp,"%s\n",pnm->comentarios[i++]);
+	}
+		
+	/*Dimensoes*/
+	fprintf(fp,"%d %d\n",colunas,linhas);
+	
+	/*Max_color*/
+	if(max_boolean == 1)
+		fprintf(fp,"%d\n",max_color);
+		
+	
+	/*RGB? -> actualizacao das colunas para impressao dos pixeis*/
+	if(strcmp(tipo,P6) == 0 || strcmp(tipo,P3) == 0)
+		colunas = (pnm->colunas)*3;
+		
+		
+	/*Matriz*/
+	if(ascii == 1)
+	{			
+		for(lh = 0; lh < linhas; lh++)
+		{
+			for(cl = 0; cl < colunas; cl++)
+			{
+				val = pnm->rep[lh][cl];
+				
+				if((max + 4)>70 ) {max = 0; fprintf(fp,"\n");}
+				
+				fprintf(fp,"%4d",val);
+						
+				max+=4;
+			}
+		}
+		fprintf(fp,"\n");
+	}
+	/*formato compactado (binario)*/
+	else
+	{
+		if(strcmp(pnm->tipo,P4) == 0)
+		{
+			for(lh = 0; lh < linhas; lh++)
+			{
+				for(cl = 0; cl < colunas; cl+=8)
+				{
+					if( ((colunas-1) - cl) < 0 )
+					{
+						cl = colunas - 1;
+						ind = colunas - cl;
+					}
+					else ind = 7;
+					
+					bin = initBin();
+					
+					while( ind >= 0 )
+					{
+						ch = pnm->rep[lh][cl+ind];
+						
+						if( ch <= 0 ) ch = 0;
+						else ch = 1;
+						bin[ind] = ch;
+						
+						
+						ind--;
+					}
+					fprintf(fp,"%c",bin2dec(bin));
+					
+				}
+				
+			}
+		}
+		else
+		{
+			for(lh = 0; lh < linhas; lh++)
+			{
+				for(cl = 0; cl < colunas; cl++)
+				{
+					ch = pnm->rep[lh][cl]; 
+				
+					if( ch < 0 ) val = 256 + ch;
+				
+					fprintf(fp,"%c",ch);	
+				}
+			}
+		}
+	}
+
+	free(tipo);
+	
+	fclose(fp);
+	
+	return EXIT_SUCCESS;
+}
+
+/*liberta a memória alocada por um PNM*/
+void freePNM(PNM *pnm)
+{
+	int comment = 0, pixel = 0, linhas = 0;
+	
+	if(pnm != NULL)
+	{
+		
+		if(pnm->tipo != NULL)
+			free(pnm->tipo);
+		
+		if(pnm->comentarios != NULL)
+		{
+			while(pnm->comentarios[comment] != NULL)
+				free(pnm->comentarios[comment++]);
+			free(pnm->comentarios);
+		}
+		
+		if(pnm->rep != NULL)
+		{
+			linhas = pnm->linhas;
+			
+			while(pixel < linhas)
+				free(pnm->rep[pixel++]);
+				
+			free(pnm->rep);
+		}
+		
+		
+		free(pnm);
+	}
+}

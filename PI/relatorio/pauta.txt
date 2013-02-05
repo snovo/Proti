@@ -1,0 +1,364 @@
+/*liberta a memória alocada por uma Musica*/
+void freeMusica(Musica * musica)
+{
+	if(musica != NULL)
+	{
+		free(musica->titulo);
+		
+		Notas * notas = musica->letra, *temp = musica->letra;
+		
+		if(notas != NULL)
+		{
+			for(temp = temp->next;temp != NULL;temp = temp->next)
+			{
+				if(notas->nota != NULL) free(notas->nota);
+				if(notas->letra != NULL) free(notas->letra);
+				free(notas);
+				notas = temp;
+			}
+			free(notas);
+		}
+		
+		free(musica);
+	}
+}
+
+/*Dado um ficheiro com as notas da musica e uma Estrutura Musica, o conteudo
+* do ficheiro é armazenado na estrutura*/
+int readMusic(char * path, Musica * musica)
+{
+
+	FILE * file = NULL;
+	file = fopen(path,"r");
+	
+	if(file == NULL)
+		return EF_NULL;
+	
+	char ch = fgetc(file);
+	int i = 0, j = 0, pausa = 0;
+	
+	char * notas = (char *)malloc(sizeof(char)*10);
+	notas[0] = '\0';
+
+	char * letra = NULL;(char *)malloc(sizeof(char)*10);	
+	
+	/*vamos ler o titulo, partimos do principio que o titulo
+	* nao tem mais que 100caracteres*/
+	musica->titulo = (char *) realloc(musica->titulo,sizeof(char)*100);
+	
+	/*leitura do titulo*/
+	for(i = 0; ch != '\n' ; i++, ch = fgetc(file))
+		musica->titulo[i] = ch;
+	musica->titulo[i] = '\0';
+	
+	
+	/*vamos ler a letra da musica*/
+	i = 0;
+	ch = '\a';
+	
+	/*cada nova linha representa um compasso novo, isto até ao final do file*/
+	while(!feof(file))
+	{
+	
+		ch = fgetc(file);
+		
+		/*nova nota com sua pausa*/
+		if(ch == '$')
+		{
+			/*reinicializar valores*/	
+			if( strlen(notas) > 0)
+			{
+				free(notas);
+				notas = (char *)malloc(sizeof(char)*10);
+			}
+			
+			i = 0;
+			pausa = 0;
+			notas[i] = '\0';
+		
+			ch = fgetc(file);
+			
+			/*ler a nota*/
+			for(; ch != ','; ch = fgetc(file))
+			{
+				if(! isspace(ch))
+				{
+					notas[i] = toupper(ch);
+					i++;
+				}
+			}
+			
+			notas[i] = '\0';
+			
+			/*ler a pausa*/
+			while(isdigit(ch) == 0)
+				ch = fgetc(file);
+			
+			pausa = ch - 48;
+			
+			/*ler o resto*/
+			while(ch != '%')
+				ch = fgetc(file);
+			
+			
+			/*adicionar a nota e a pausa*/
+			if( insertNota(musica,notas,pausa) == EXIT_FAILURE)
+				return EXIT_FAILURE;
+			
+			musica->notas++;
+			
+		}
+		/*novo acorde*/
+		if(ch == '(')
+		{
+			/*insercao de inicio de acorde*/
+			if( insertNota(musica,acordS, 0) == EXIT_FAILURE)
+				return EXIT_FAILURE;
+			
+			musica->acordes++;
+		} 		
+		/*fim acorde*/
+		else if(ch == ')')
+		{
+			if( insertNota(musica,acordE, 0) == EXIT_FAILURE)
+				return EXIT_FAILURE;
+		} 		
+		/*novo compasso*/
+		else if(ch == '\n')
+		{
+			if( insertNota(musica,Comp, 0)  == EXIT_FAILURE)
+				return EXIT_FAILURE;
+			musica->compassos++;
+		}else if(ch == '<')
+		{
+			j = 0;
+			if(letra != NULL)
+			{
+				free(letra);
+			}
+			
+			letra = (char *) malloc(mem);
+			
+			for(j = 0 ; (ch = fgetc(file)) != '>' ; j++)
+			{
+				if(j%mem == 0) letra = 
+					(char *)realloc(letra,((j/mem)+1)*mem);
+				letra[j] = ch;
+			}
+			
+			letra[j] = '\0';
+			
+			if(letra != NULL)
+			{
+				insertLetra(musica,letra);
+				free(letra);
+				letra = NULL;
+			}	
+		}
+	}
+	
+	fclose(file);
+	
+	return EXIT_SUCCESS;
+}
+
+/*cria a pauta musical referente à musica "path"*/
+PNM * criaPMusical(char *path)
+{
+	int yy_nota = 0;
+	int xx_nota = inicial_spc, xx_inc = 0, _do = 0, xx_nota_ant = 0;
+	int i = 0;
+	char * objecto = strdup("vazio");
+	char * textoM;
+	int temp = 0, temp2 = 0;
+
+	Musica *musica = createMusica();
+	
+	int control = readMusic(path,musica);
+	
+	if(control == EXIT_FAILURE || control == EF_NULL)
+		return NULL;
+	
+	int n_seg = calcula_n_pauta(musica);
+	
+	/*criacao da pauta musical*/
+	PNM *pauta = createPauta(musica,n_seg);
+	
+	Notas *notas = musica->letra;
+	/*carregamento da imagem representativa de uma nota musical*/
+	PNM *semibreve = lePNM(semibreve_path_ppm);
+	PNM *minima = lePNM(minima_path_ppm);
+	PNM *colcheia = lePNM(colcheia_path_ppm);
+	PNM *semicolcheia = lePNM(semicolcheia_path_ppm);
+	PNM *seminima = lePNM(seminima_path_ppm);
+	PNM *fusa = lePNM(fusa_path_ppm);
+	
+	
+	/*carregamento da imagem representativa de uma pausa musical*/
+	PNM *p_semibreve = lePNM(p_semibreve_path_ppm);
+	PNM *p_minima = lePNM(p_minima_path_ppm);
+	PNM *p_colcheia = lePNM(p_colcheia_path_ppm);
+	PNM *p_semicolcheia = lePNM(p_semicolcheia_path_ppm);
+	PNM *p_seminima = lePNM(p_seminima_path_ppm);
+	PNM *p_fusa = lePNM(p_fusa_path_ppm);
+	
+	
+	PNM **pausas = (PNM **) malloc(sizeof(PNM *) * 6);
+	PNM **notas_ = (PNM **) malloc(sizeof(PNM *) * 6);
+	
+	
+	pausas[0] = p_semibreve;
+	pausas[1] = p_minima;
+	pausas[2] = p_colcheia;
+	pausas[3] = p_semicolcheia;
+	pausas[4] = p_seminima;
+	pausas[5] = p_fusa;
+	
+	
+	notas_[0] = semibreve;
+	notas_[1] = minima;
+	notas_[2] = colcheia;
+	notas_[3] = semicolcheia;
+	notas_[4] = seminima;
+	notas_[5] = fusa;
+	
+	/*carregamento da imagem representativa de uma repeticao musical*/
+	PNM *repeticao = lePNM(repeticao_ppm);
+	
+	/*texto a inserir na pauta*/
+	PNM *texto = criaTexto(musica->titulo);
+	
+	/*insercao do titulo da musica na imagem*/
+	temp = (pauta->colunas/2) - (texto->colunas/2);
+	
+	if(texto != NULL)
+		sbr(texto,pauta,x_nota,x_nota,&temp,&temp2,0);
+
+
+	/*preenchimento da pauta com notas, repeticoes, pausas e afins*/	
+	for(;notas != NULL; notas = notas->next)
+	{
+		free(objecto);
+		objecto = strdup(notas->nota);
+		textoM = notas->letra;
+		
+		
+		/* caso objecto seja uma pausa */
+		if( strcmp(objecto, Pausa) == 0 )
+		{
+			if(notas->pausa >= 1 && notas->pausa <= 6)
+				sbr(pausas[notas->pausa-1],pauta,y_pausa+i,x_nota,&xx_nota,&i,0);
+			
+		}
+		/* caso objecto seja um novo compasso */
+		else if(strcmp(objecto, Comp) == 0)
+		{
+			/*insercao da linha divisoria de um compasso*/
+			insereSegLinha(pauta,i+2*dbl,i+altura-3*dbl,
+				(xx_nota-10)*3,(xx_nota-10)*3+(espCl*3));
+			/*actualizacao do xx_nota*/
+		}
+		/* caso objecto seja um conjunto de acordes */
+		else if( strcmp(objecto,acordS) == 0 )
+		{
+			for(notas = notas->next ; strcmp(notas->nota,acordE) != 0 ; notas = notas->next)
+			{
+				/*determina qual a nota sem actualizar xx_nota, 
+				* tb pinta a nota com a sua respectiva cor*/
+				if(notas->pausa >= 1 && notas->pausa <= 6)
+				{
+				    detNota(notas_[notas->pausa-1], notas->nota,&yy_nota,&xx_inc,0,i,&_do);
+				    /*insere a nota no sitio correspondente*/
+							
+				    sbr(notas_[notas->pausa-1],pauta,yy_nota,xx_inc,&xx_nota,&i,_do);
+				}
+				
+				textoM = notas->letra;
+				/*adiciona o texto*/
+				if(textoM != NULL)
+				{
+					temp2 = i;
+					temp = yText+i;
+					
+					texto = criaTexto(textoM);
+					temp = texto->colunas/2;
+					xx_nota_ant = xx_nota + 9 - temp;
+					sbr(texto, pauta, yText+i ,xx_inc,&xx_nota_ant,&temp2,0);
+				}
+			}
+			
+			xx_nota+=x_nota<<1;
+		}
+		/* caso objecto seja uma repeticao */
+		else if( strcmp(objecto, Rep) == 0 )
+		{
+			/*insere o sinal de repeticao */
+			xx_inc = 0;
+			sbr(repeticao,pauta,yrep1+i,xx_inc,&xx_nota,&i,0);
+			sbr(repeticao,pauta,yrep2+i,xx_inc,&xx_nota,&i,0);
+			xx_nota += x_nota<<1;
+		}
+		/* se apenas for uma nota */
+		else
+		{
+			/*determina qual a nota actualizando xx_nota, 
+			* tb pinta a nota com a sua respectiva cor*/
+			if(notas->pausa >= 1 && notas->pausa <= 6)
+        			detNota(notas_[notas->pausa-1], notas->nota,&yy_nota,&xx_inc,1,i,&_do);
+			/*insere a nota no sitio correspondente*/
+
+			if(textoM != NULL)
+			{
+				if(notas->pausa >= 1 && notas->pausa <= 6)
+					sbr(notas_[notas->pausa-1],pauta,yy_nota,0,&xx_nota,&i,_do);
+				texto = criaTexto(textoM);
+				
+				temp = texto->colunas/2;
+				
+				xx_nota_ant = xx_nota + 9 - temp;
+				sbr(texto, pauta, yText+i,0,&xx_nota_ant,&i,0);
+				
+				xx_nota+=xx_inc<<1;
+			}
+			else
+			{
+				if(notas->pausa >= 1 && notas->pausa <= 6)
+					sbr(notas_[notas->pausa-1],pauta,yy_nota,xx_inc,&xx_nota,&i,_do);
+			}
+			
+			if(textoM != NULL)
+			{
+				if(texto != NULL) free(texto);
+				texto = NULL;
+			
+			}
+		}
+		
+	}
+	/*fim do for*/
+	
+
+	freeMusica(musica);
+	if(texto != NULL) free(texto);
+	
+	freePNM(p_semibreve);
+	freePNM(p_seminima);
+	freePNM(p_minima);
+	freePNM(p_colcheia);
+	freePNM(p_semicolcheia);
+	freePNM(p_fusa);
+	
+	freePNM(semibreve);
+	freePNM(seminima);
+	freePNM(minima);
+	freePNM(colcheia);
+	freePNM(semicolcheia);
+	freePNM(fusa);
+	
+	free(notas_);
+	free(pausas);
+	
+	freePNM(repeticao);
+	
+	return pauta;
+}

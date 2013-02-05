@@ -1,0 +1,781 @@
+\documentclass{report}
+
+
+
+%% Declarações
+
+
+\parindent0pt
+\parskip10pt
+\footskip1cm
+
+\usepackage[portuges]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage{t1enc}
+\usepackage{aeguill}
+
+%\usepackage{a4wide}
+
+\usepackage{url}
+\usepackage{graphicx}
+
+\usepackage{latexsym}
+\usepackage{epsfig}
+
+\usepackage[svgnames]{xcolor}
+\usepackage{a4wide}
+\usepackage{longtable}
+\usepackage{amsfonts}
+\usepackage{verbatim}
+
+%\renewcommand{\familydefault}{\sfdefault}  % para mudar o tipo de letra para sans
+\usepackage{hyperref} % para ter os links no PDF gerado
+
+% Algumas definições
+
+\def\pnm{\textsf{PNM}}
+\def\ppm{\textsf{PPM}}
+\def\pbm{\textsf{PBM}}
+\def\C{\textsf{C}}
+\def\pgm{\textsf{PGM}}
+\def\pp2pi{\textsf{Programação Imperativa / Paradigmas de Programação 2}}
+\def\rgb{\textsf{RGB }}
+\def\jpg{\textsf{JPEG/JPG }}
+\def\gif{\textsf{GIF }}
+
+%--------------------------
+
+
+\begin{document}
+
+\begin{titlepage}
+    \begin{tabular}{l |c}
+    \begin{minipage}{12cm}
+    \vspace{3cm}
+    \includegraphics[height=70pt]{imagens/logo}\\
+    {\small\bf{\textcolor{Gray}{Universidade do Minho}}\\
+        {\footnotesize\textcolor{Gray}{\textnormal{{Conselho de Cursos de Ciências \\\vspace{4 mm}Licenciatura em Matemática e Ciências de Computação }}}}\\
+    \ \\ \ \\ \ \\
+       {\Large \textbf{\textcolor{CadetBlue}{Programação Imeprativa \\ \& \\ Paradigmas de Programação II}}}\\
+    \scriptsize {\textnormal {Ano Lectivo de 2005/2006}}}\\
+    \end{minipage} &\\ \\
+    \hline
+    \begin{minipage}{10cm}
+    \ \\ \\
+%        \huge{\textbf{Multigest}}\\
+    \LARGE{\LARGE{ \textbf{Processamento de Texto e Imagem \\ }} }
+	\textcolor {CadetBlue}{\\Projecto}%{LightSeaGreen}{Projecto}
+    \ \\
+    \end{minipage} &
+    \begin{minipage}{47mm}
+ %   \fbox{
+   \begin{center}
+    \begin{minipage}{2.5cm}
+    \bigskip
+   \scalebox{6}{
+%    \textbf{\textcolor{CadetBlue}{E4}}
+}
+    \bigskip
+
+   \end{minipage}%}
+   \end{center}
+    \end{minipage}
+\\
+    \hline
+\ \\ \\ \\ \\ \\
+\large{Sérgio Augusto Pereira Novo nº 35860} &\\ \\
+
+&\\
+&\\
+&\\
+\small{Maio, 2006}&\\
+&\\
+\end{tabular}
+
+\end{titlepage}
+
+
+\begin{abstract}
+Este documento constitui o relatório do projecto da disciplina de Paradigmas de Programação 2 / Programação Imperativa.
+Com este projecto pretendesse criar uma aplicação capaz de manipular imagens no formato \pnm e ainda dado um ficheiro de texto com as notas de uma música num formato pré-estabelecido, criar uma representação gráfica em formato \pnm da pauta associada a esse ficheiro. O projecto divide-se em três fases distintas. Numa primeira fase, pretende-se elaborar e codificar um conjunto de algoritmos capazes de lerem e escreverem imagens \pnm. A segunda fase consiste consiste em desenvolver algoritmos de capazes de efectuar operações básicas sobre as imagens, tais como conversões entre as diversas famílias que pertencem ao formato \pnm e rotações. A terceira e última fase consiste na criação de algoritmos dignos de lerem uma musica num formato de texto e criarem com o auxilio dos algoritmos elaborados nas fases anteriores a pauta musical referente à musica lida.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+\listoffigures
+\listoftables
+\newpage
+
+%------------------------------------------------------------------------------------------------------------
+
+\chapter{Arranque do Projecto}
+
+\section{Introdução}
+
+Este documento apresenta os algoritmos desenvolvidos à implementação deste projecto, bem como uma descrição das estruturas de dados criadas para manuseio da informação.
+
+\section{Identificação do Projecto}
+
+Processamento de Texto e Imagem.
+
+\section{Definição}
+
+O projecto consiste na criação de uma aplicação final, com capacidade de manipular eficientemente ficheiros de texto. A aplicação será capaz de ler, alterar e guardar imagens \pnm; terá ainda a capacidade de perante um conjunto notas musicais previamente lidas de um ficheiro texto criar a respectiva pauta musical.
+
+\section{Contextualização}
+
+O projecto em questão enquadra-se no seguimento do programa de estudo leccionado em \pp2pi, levando em conta a capacidade de desenvolver algoritmos funcionais e eficientes
+numa linguagem imperativa, neste caso em \C .
+Este projecto tem como principal objectivo desenvolver a capacidade de resolver problemas de média dimensão, fumentando a capacidade de projectar e codificar em linguagem \C  algoritmos manipuladores de strings, valores numéricos, bem como de armazenamento de informação a curto e longo prazo. 
+
+\section{Objectivos}
+
+\subsection{Objectivos de caracter genérico}
+
+Com a realização do projecto esperam-se desenvolver as seguintes capacidades:
+
+\begin{itemize}
+\item a capacidade critica;
+
+\item a comunicação escrita e oral;
+
+\item a capacidade de utilização de utilitários genéricos de informática em ambiente Linux;
+
+\item a capacidade de desenvolver de forma critica e criativa algoritmos para resolucao de problemas;
+
+\item a capacidade e aptidões práticas para gerar, executar e testar programas codificados em C, usando um conjunto adequado de utilitários (GNU);
+
+\item de desenvolver e aplicar testes de conformidade e análise das condições de fronteira da execução da aplicação;
+
+\item capacidade e aptidões na produção de documentação adequada à manutenção por terceiros dos programas desenvolvidos.
+
+\end{itemize} 
+
+\subsection{Objectivos do projecto}
+
+Para este projecto esperam-se cumprir os seguintes objectivos:
+
+\begin{itemize}
+
+\item Desenvolver um conjunto de algoritmos para ler e escrever imagens PNM; mais concretamente, pretende-se ler imagens do tipo P1, P2, P3, P4, P5 e P6 e escrever a imagem lida em qualquer um dos 6 formatos;
+
+\item Codificar os algoritmos propostos, documentando-os adequadamente;
+
+\item Preparar um conjunto de ficheiros de entrada para teste, que permita validar, além de outras, as de condições limite;
+
+\item Integrar e testar o produto final (da Fase 1) usando comandos da shell para (i) leitura de um ficheiro JPEG ou GIF e sua conversão para PNM, (ii) leitura de um ficheiro PNM (P2, P3, P5 ou P6) e sua conversão para noutro ficheiro PNM (P1 ou P4) e (iii) visualização da imagem usando ImageMagick ;
+
+\item refinar o interface com o utilizador, construindo um menu de operações e permitindo mais que uma operação em cada sessão;
+
+\item Desenvolver um conjunto de algoritmos capazes de gerarem automaticamente uma pauta musical colorida;
+
+\item A aplicação deverá receber um ficheiro de texto com as notas de uma musica e criar a pauta em qualquer um dos formatos \pnm.
+
+\end{itemize} 
+
+
+%------------------------------------------------------------------------------------------------------------
+\chapter{Concepção do projecto}
+
+\section{O formato \pnm}
+
+O formato de imagem \pnm  não é propriamente um formato de imagem, mas sim uma forma generalizada de nos referirmos aos formatos \pbm, \pgm  e \ppm.
+
+O formato de imagem \pnm foi desenvolvido com vista a permitir enviar imagens via e-mail, que até ai era impossivel, dado ainda não ser possivel o enivo de ficheiros binarios. Desta forma as imagens introduzidas na mensagem e enviadas como que se de um texto normal se tratasse, originando ficheiros demasiado grandes (bytes).
+Mais tarde este formato viria a ser modificado de forma a suportar imagens em formato binário (permite compactar as imagens).
+
+O \pnm tratasse de um formato muito simples, tornando a leitura e escrita deste formato em ficheiro muito fácil. Actualmente, o \pnm divide-se em três familias de formatos, o \pbm, o \pgm e o \ppm. Ambos estes formatos tem possuem uma estrutura muito idêntica. O inicio de cada ficheiro deste tipo é definido por um cabeçalho, sempre em formato texto, que além de indicar o formato da imagem (P1,P2,P3,P4,P5,P6), indica ainda a dimensao da mesma; seguido dos dados da figura.
+
+Por convenção, a ordenação dos valores dos pixéis corresponde ao varrimento das imagens linha a linha, de cima para baixo, e da esquerda para a direita em cada uma das linhas.
+
+
+
+
+\subsection{A familia \pbm}
+
+O formato de imagem \pbm, é um formato monocromatico, quer isto dizer que apenas suporta imagens a preto e branco. Este formato pode ser escrito em modo texto ou modo binário. O número mágico P1 identifica o primeiro caso, enquanto que o segundo é identificado pelo número P4.
+
+O seu formato textual pode ser descrito da seguinte forma:
+
+\begin{itemize}
+
+\item A primeira linha contém o numero mágico que identifica o tipo da imagem;
+\item A segunda linha contem as dimensoes da imagem em pixeis (linhas colunas);
+\item No cabeçalho, qualquer linha iniciada pelo caracter \# identifica um comentario;
+\item Seguido do cabeçalho, encontram-se os dados da imagem que assumem dois valores distintos: 1 para identificar o pixel branco e 0 para identificar o pixel preto. Cada pixel está separado do seguinte por um caracter branco ('\(\backslash\)n', ' ', '\(\backslash\)r', etc).
+
+\end{itemize}
+
+Exemplo1: \\
+P1
+\# PBM example \\
+9 7
+ 0 0 0 0 0 0 0 0 0 \\
+ 0 1 1 1 1 0 0 1 0 \\
+ 0 1 0 0 1 0 0 1 0 \\
+ 0 1 1 1 1 0 0 1 0\\
+ 0 1 0 0 0 0 0 1 0\\
+ 0 1 0 0 0 0 0 1 0\\
+ 0 0 0 0 0 0 0 0 0\\
+
+
+Exemplo2: \\
+P4 \\
+\# PBM example \\
+9 7
+0 0
+121 0
+73 0
+121 0
+65 0
+65 0
+0 0 
+
+\subsection{A familia \pgm}
+
+Este é um formato com a capacidade de representar imagens numa escala de cinzas.
+Possui o número mágico P2 para se referenciar a uma imagem escrita em modo texto e o número mágico P5 quando se trata de uma imagem em formato binario.
+Apesar dos pixeis deste formato poderem ser representados por dois bytes [0-65536], faz-se um esforço por representa-los usando apenas um byte [0-255], pois só assim se pode falar em compactação neste formato. 
+
+A sua representação textual em tudo se assemelha à do formato \pbm.
+
+Descrição do formato:
+
+\begin{itemize}
+
+\item A primeira linha contém o numero mágico que identifica o tipo da imagem;
+\item A segunda linha contem as dimensoes da imagem em pixeis (linhas colunas);
+\item A linha seguinte indica o maximo valor que um pixel terá na imagem a representar;
+\item No cabeçalho, qualquer linha iniciada pelo caracter \# identifica um comentario;
+
+\item Seguido do cabeçalho, encontram-se os dados da imagem que assumem valores compreendidos entre 0 e 255 (1 byte) ou 0 e 65536 (2 bytes).O valor 0 representa o pixel preto e 255 ou 65536 representa o pixel branco. Cada pixel está separado do seguinte por um caracter branco ('\(\backslash\)n', ' ', '\(\backslash\)r', etc).
+
+\end{itemize}
+
+Exemplo:\\
+P2 24 7 15
+0000000000000000000000000333300777700BBBB00FFFF00300000\\
+700000B00000F00F00333000777000BBB000FFFF00300000700000\\
+B00000F00000300000777700BBBB00F000000000000000000000000\\
+0000
+
+\subsection{A familia \ppm}
+
+O formato \ppm permite representar imagens a cores. Neste formato cada pixel é constituido por três valores. Estes valores representam o sistema de cores \rgb (vermelho, verde e azul). Ao contrário dos outros dois formatos, em que o número de valores na matriz é dado por linhas*colunas, o número de valores é três vezes superior devido ao facto de cada pixel ser representado por três inteiros.
+
+Descrição do formato:
+
+\begin{itemize}
+
+\item A primeira linha contém o numero mágico que identifica o tipo da imagem;
+\item A segunda linha contem as dimensoes da imagem em pixeis (linhas colunas);
+\item A linha seguinte indica o maximo valor que um pixel terá na imagem a representar;
+\item No cabeçalho, qualquer linha iniciada pelo caracter \# identifica um comentario;
+
+\item Seguido do cabeçalho, encontram-se os dados da imagem que assumem valores compreendidos entre 0 e 255 .O valor 0 representa o pixel preto e 255 representa o pixel branco. Cada pixel terá de ser representado pela componente \rgb e está separado do seguinte por um caracter branco ('\(\backslash\)n', ' ', '\(\backslash\)r', etc).
+
+\end{itemize}
+
+Exemplo: \\
+P3\\
+\# feep.ppm\\
+4 4\\
+15\\
+ 0  0  0    0  0  0    0  0  0   15  0 15\\
+ 0  0  0    0 15  7    0  0  0    0  0  0\\
+ 0  0  0    0  0  0    0 15  7    0  0  0\\
+15  0 15    0  0  0    0  0  0    0  0  0\\
+
+\section{Formato de um ficheiro de Música}
+
+\subsection{Descrição}
+O formato deste ficheiro teve de ser alterado para que podesse suportar a noção de tempo de uma nota além como o texto associado a cada nota. Cada ficheiro será composto pela nome da musica que terá de estar obrigatóriamente na primeira linha do ficheiro. Todas as linhas que se lhe seguem correspondem a compassos. Todos as notas, bem como pausas e sinais de repetição terão de ser seguidos do tempo em que se encontram, no caso das repeticoes, dado que estas não possuem tempo, o valor será 0. A preceder cada nota estará o caracter \textit{\$}, \textit{\%} estará a seguir ao tempo.
+As notas podem ser precedidas de informação textual adiconal, para tal, essa informação terá de estar compreendida entre os caracteres \textit{< >} e a precede-los terá de estar a nota respectiva a essa informação.
+\\
+Os tempos serão inteiros, para tal existe uma tabela de conversão entre os tempos de uma nota e os valores a inserir. A tabela seguinte pretende representar essa conversao:
+
+\begin{table}[htb]
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+Tempo & Valor\\\hline
+Nenhum & 0\\
+4 & 1 \\
+2 & 2 \\
+1 & 3 \\
+1/2 & 4 \\
+1/4 & 5 \\
+1/8 & 6\\\hline
+
+\end{tabular}
+\end{center}
+\caption{Tabela de conversão}
+\end{table}
+
+
+\newpage
+Exemplo: \\ \\
+1:Nome do ficheiro\\
+2:\$CM,3\%\\
+3:\$Repete,0\%\\
+4:(\$Pausa,4\% \$E,2\% <Mi>)\\
+
+
+\section{Estruturas de Dados}
+
+\subsection{Fase 1 e Fase 2}
+
+Para a realização destas duas fases foi necessário criar uma estrutura de dados que armazenasse temporariamente em memória a informação relativa a uma imagem. Tentou-se criar a estrutura de dados o mais simples possivel, mas tendo em consideração que nenhuma informação seria perdida durante o armazenamento da imagem.
+
+{\small
+\begin{verbatim}
+typedef struct pnm
+{
+        char *tipo;	
+        char **comentarios; 
+	
+        int colunas;	
+        int linhas;	
+        
+        int max_color;	
+        int **rep;	
+}PNM;
+\end{verbatim}
+}
+
+Esta estrutura é utilizada para armazenar toda a informação que uma imagem \pnm possa ter. No primeiro campo (string) da estrutura vai ficar guardado o valor do \textit{número mágico} da imagem. Dado que uma imagem pode ter vários comentários de significativo interesse (tais como local de criação, autor, etc), criou-se um campo (lista de strings) com a capacidade de armazenar todos os comentarios existentes. Cada imagem é composta por uma matriz de pixeis e essa matriz tem um determinado numero de linhas e colunas, para tal criou-se um campo linhas e um campo colunas (ambos inteiros) com o intuito de guardar essa informação. Algumas familias de \pnm's têm no cabecalho o valor maximo que que pode encontrar na matriz de pixeis, para tal criou-se o campo max\_color (inteiro) capaz de armazenar esse valor. Por fim criou-se um campo (matriz de inteiros) capaz de armazenar todos os pixeis da imagem.
+
+
+\subsection{Fase 3}
+
+Na realização da fase 3 também teve-se a necessidade de criar uma estrutura de dados que armazenasse toda a informação que o ficheiro de texto (pauta em formato de texto) possuisse. As estruturas seguintes representam esse mesmo intuito.
+
+{\small
+\begin{verbatim}
+
+typedef struct notas
+{
+        char *nota;
+        char * letra;
+        int pausa;
+        struct notas *next;
+} Notas;
+
+
+typedef struct musica
+{
+        int acordes;
+        int notas;
+        int compassos;
+	
+        char * titulo;
+        Notas * letra;
+} Musica;
+
+\end{verbatim}
+}
+
+O armazenamento do conteudo do ficheiro de entrada é efectuado na estrutura de dados \textit{Musica}. Esta estrutura possui um campo do tipo \textit{char *} onde ficará armazenado o titulo da peça musical que estamos a processar. Possui três campos do tipo inteiro (acrodes, notas, compassos) onde ficam guardados o numero de notas, compassos e acordes encontrados no ficheiro de entrada.  O último campo desta estrutura é um apontador para uma nova estrutura denominada \textit{Notas}. Nesta estrutura ficaram armazenadas todas as notas existentes no ficheiro. A ordem de armazenamento é relevante para a contrucao grafica da pauta, uma troca na ordem iria produzir uma pauta diferente da que se pretendia. De salientar que quando se encontra um novo compasso, pausas, repetições e acordes, estes sao armazenados na mesma na estrutura \textit{Notas} na posição correcta através da respectiva flag de identificação. Tanto as notas como os compassos, acordes, pausas e repeticoes são armazenados no campo nota (string); o tempo associado a cada nota e  pausa é armazenado no campo pausa, acordes, repeticoes e compassos não possuem tempos, pelo que o campo pausa irá possuir um valor proprio. Foi adicionado um extra a esta fase, esse extra permite que uma nota tenha informação textual de tamanho reduzido (como a letra da musica associada à nota em questao), essa informacao é armazenada sob a forma de uma string no campo letra. O último campo é um apontador para a proxima nota.
+
+%------------------------------------------------------------------------------------------------------------
+
+\section{Algoritmos desenvolvidos}
+
+Nesta secção encontra-se uma descrição detalhada dos algoritmos criados para a elaboração do projecto. Apenas é feita referencia aos algoritmos de maior relevância para a realização de cada uma das fases.
+
+\subsection{Fase 1}
+
+Neste ponto foca-se especial atenção para o algoritmo de leitura e escrita de uma imagem \pnm.
+
+
+\begin{itemize}
+
+\item Algoritmo de leitura
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[height=110pt]{imagens/leitura}\\
+\end{center}
+\caption{Esquema representativo do algoritmo de leitura de uma imagem \pnm}
+\end{figure}
+
+O algoritmo de leitura de uma imagem \pnm é relativamente simples. Como os comentarios podem estar em qualquer linha do cabeçalho, sempre que se tenta extrair informação presente no cabeçalho, verificamos se na linha em questão existe algum comentario, caso exista adicionamo-lo à estrutura de dados; quando aparece uma linha no cabeçalho que nao seja um comentário, tentamos instanciar com a informacao que queremos recolher no momento (tipo, número de linhas, etc), caso falhe aborta-se a execucao do algoritmo. Caso o tipo da imagem seja diferente de P1 ou P4, o algoritmo vai tentar extrair do cabeçalho a informacao relativa ao valor maximo do pixel que se encontrará na matriz passando de seguida para o reconhecimento da matriz. No caso de estarmos perante um P1 ou P4, salta o reconhecimento de do valor maximo, passando directamente para o reconhecimento da matriz. No reconhecimento da matriz, caso estejamos perante uma imagem no formato \ppm, tentamos recuperar linhas*colunas*3 elementos, caso contrario apenas tentamos recuperar linhas*colunas elementos, na presenca de um erro o algoritmo termina o reconhecimento da imagem. Para imgens em formato de texto, concatenamos todos os caracteres até encontrarmos o caracter espaco ou mudança de linha, uma vez na presenca de um caracter destes, a palavra formada até então é convertida pela função \textit{atoi} no valor de um pixel, este metodo é efectuado até ao final do ficheiro ou até se ter lido todos os pixeis necessários para formar a imagem. No caso de estarmos a ler uma imagem em formato binário, cada byte vai ser um novo pixel, pelo que o algoritmo lê a matriz byte a byte, converte o valor lido para o intervalo [0-255] e adiciona-o à matriz como sendo um novo pixel. Este algoritmo está codificado na função \textit{readPNM(char * path, PNM * imagem)} que recebe como argumento a \textit{path} do ficheiro a ler e devolve em \textit{imagem} o resultado dessa operação. Esta função recorre a 4 funções auxiliares para executar a leitura, são elas: \textit{leTipo(FILE *, PNM *)} que lê o tipo da imagem, \textit{leDim(FILE *, PNM *)} que lê as dimensoes da imagem, \textit{leMPixel(FILE *, PNM *)} que lê o pixel maximo da imagem e ainda \textit{leRep(FILE * , PNM * )} responsavel por ler a matriz de pixeis da imagem. O tratamento dos comentarios é efectuado em \textit{leTipo, leDim e leMPixel}.
+
+\item Algoritmo de escrita
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[height=100pt]{imagens/escrita}\\
+\end{center}
+\caption{Esquema representativo do algoritmo de escrita de uma imagem \pnm}
+\end{figure}
+
+O algoritmo de escrita é bastante simples. O algoritmo comeca por criar um ficheiro vazio e escreve em cada linha os elementos do cabeçalho, exceptuando as linhas e as colunas que são escritas na mesma linha. No formato \pnm, embora não seja uma obrigação, existe a convenção de que cada linha da matriz no ficheiro não deve de ultrapassar os 70 caracteres, pelo que o algoritmo na escrita da matriz para o ficheiro vai mudar de linha a cada 70 caracteres no maximo. Caso o tipo da imagem seja do tipo textual, o algoritmo vai colocar escrever todos os pixeis da matriz no ficheiro como se de texto se tratasse, caso o tipo seja compactado, todos os valores serão escritos em formato binario no ficheiro.
+
+\end{itemize}
+
+
+
+\subsection{Fase 2}
+
+\begin{itemize}
+\item Algoritmo de conversao\\ \\
+Este algoritmo converte as imagens \pbm em imagens \pgm criando uma nova imagem com os valores 0 e 255, em que zero representara a cor preta e 255 a cor branca. O processo de conversao para o formato \ppm é similar, a unica diferenca reside no facto de cada pixel ter a mesma informacao 3 vezes, assim o valor 1 no formato \pbm é convertido para os valores 0 0 0 no formato \ppm. A conversao de um \pgm para um \ppm apenas consiste em replicar a informacao do \pgm 3 vezes. Converter um \pgm num \pbm consiste em verificar se o pixel no formato \pgm é maior ou nao que 128, se for maior o pixel no formato \pbm vai tomar o valor branco se não toma o valor preto. O processo de conversao de um \ppm para um \pbm consiste em somar os componentes do pixel, dividi-lo por tres, determinar o quociente e o resto da divisão e caso resto seja maior que 128, testamos se o quociente+1 é maior que 128, caso seja, o pixel no formato \pbm toma o valor branco caso contrario o valor preto; caso o resto seja menor ou igual a 128 apenas testamos se o quociente é maior que 128 e atribuimos o valor preto caso seja menor e branco no outro caso. A conversao de uma imagem a cores para uma imagem a tons de cinza consiste em determinar o somatorio dos componentes do pixel colorido e dividi-lo por três, o quociente é o valor do pixel na imagem a tons de cinza, no caso do resto ser maior que 128, atribuimos o valor quociente+1.
+
+\item Algoritmo de rotação\\ \\
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[height=140pt]{imagens/rotacao}\\
+\end{center}
+\caption{Esquema representativo do algoritmo de rotação de uma imagem \pnm}
+\end{figure}
+
+Este algoritmo cria uma nova imagem em que no caso de efectuar uma rotação para a esquerda, coloca na primeira coluna da imagem a primeira linha invertida da imagem a aplicar a rotação, na segunda coluna a segunda linha invertida, este processo repetesse até chegar à ultima coluna; se a rotação for para a direita, coloca na primeira coluna a última linha da imagem a aplicar a rotaçao, na segunda coluna a penultima linha e por em diante até chegar à ultima coluna.
+
+\item Algoritmo de inversão\\ \\
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[height=100pt]{imagens/inversao}\\
+\end{center}
+\caption{Esquema representativo do algoritmo de inversão de uma imagem \pnm}
+\end{figure}
+
+A inversao horizontal consiste em trocar a ordem das colunas, passando a ultima da imagem original a ser a primeira na imagem criada, a penultima a segunda, e por ai em diante até a primeira ser a ultima.\\A inversao vertical é tão simples como trocar as linhas. O método de troca é similar ao realizacao pela inversão horizontal.
+
+\end{itemize}
+
+\subsection{Fase 3}
+
+Desta fase, consta a criação de pautas musicais. Dado um ficheiro de entrada contendo o nome da musica e notas da mesma criou-se um método capaz de ler este ficheiro, armazenar a informação numa estrutura de dados e criar uma imagem com a pauta. Este processo está dividido em algoritmos principais. O algoritmo de leitura do ficheiro,  um outro que cria a pauta com o tamanho necessario para a inserção de todos as notas e pausas e por último o algoritmo que dado uma nota e sua imagem correspondente ja com a respectiva cor insere-a na pauta previamente criada.
+O algoritmo de leitura do ficheiro lê a primeira linha como  sendo o nome da musica, e tudo o resto adiciona a uma estrutura de dados do tipo \textit{Musica}. Se a nota que vai ser inserida na estrutura não for uma nota válida, a execução do algoritmo é anulada, caso contrario, lê o ficheiro até chegar ao fim deste. Durante este processo é determinado o numero de notas total no ficheiro (pausas inclusivé), o numero de acordes e o numero de compassos. Este algoritmo está implementado na função \textit{int readMusic(char *path, Musica * musica)}. De seguida é aplicado o algoritmo de criação da pauta, que se encontra implementado na função \textit{PNM *createPauta(Musica *musica,int mul\_altura)}, onde mul\_altura é número de pautas (conjunto de cinco linhas) que a imagem terá. Este valor é determinado à custa dos valor \textit{notas, acordes e compassos} presentes na estrutura \textit{musica}. Posteriormente o algoritmo de criação da pauta final (\textit{createPauta}) irá criar uma imagem \pnm com mul\_altura*5 linhas, ou seja, uma imagem com mul\_altura pautas. Após ter a pauta criada e a msica em memória é altura de inserirmmos as notas na pauta. Este processo é efectuado pela função \textit{int sbr(PNM * objecto,
+	PNM * pauta,
+	int yy\_nota,
+	int xx\_inc,
+	int *xx\_nota,
+	int *i,
+	int \_do)}. Esta função insere a  nota \textit{objecto} na pauta \textit{pauta} mediante as coordenadas (x,y) dadas pelos valores \textit{yy\_nota e xx\_nota}. No caso da inserção ser bem sucedida, o valor \textit{xx\_nota} é actualizado em \textit{xx\_inc} para que a proxima inserção na sobreponha a nota anteriror. No caso de um acorde o valor \textit{xx\_inc} é passado com o valor 0 (zero). Caso a inserção falhe, o algoritmo vai tentar inserir novamente a nota mas desta vez na "subpauta" seguinte, para tal o valor \textit{yy\_nota} é actualizado em \textit{i} unidades enquanto que o valor \textit{xx\_nota} é actualizado para o valor de insercao da primeira nota numa "subpauta", este valor nunca é zero pois no incio da "subpauta" encontra-se a clave de sol. Se esta ultima tentativa falhar, o algoritmo é abortado.\\
+O algoritmo principal que incorpora estes três subalgoritmos encontra-se implementado na função \textit{PNM * criaPMusical(char * file)}. Nesta ultima função é determinada a cor de cada nota e efectuada a coloração da imagem respectiva, também é aqui se insere todo o texto na pauta.
+
+%------------------------------------------------------------------------------------------------------------
+\chapter{A ferramenta Proti}
+
+Para tornar a utilizacao deste trabalho prático mais facil e intuitiva, para além do modo de texto, foi criado um modo gráfico utilizando ferramentas e bibliotecas referidas em \textit{Requisitos de software} e \textit{Software auxiliar}.
+
+Deste modo gráfico destacam-se de entre outras as seguintes funcionalidades:
+
+\begin{itemize}
+
+\item \textit{Abrir} - Permite abrir um ficheiro \pnm, \jpg, \gif ou de musica;
+
+\item \textit{Guardar} - Permite guardar uma imagem previamente convertida numa das familias \pnm;
+
+\item \textit{Sair} - Permite abandonar a aplicação, libertando toda a memória por ela reservado;
+
+\item \textit{Converter} - Permite converter as imagens entre as diferentes familias do formato \pnm;
+
+\item \textit{Rodar} - Permite rodar uma imagem no para a esquerda e/ou direita;
+
+\item \textit{Inverter} - Permite espelhar uma imagem horizontalmente e/ou verticalmente.
+
+\end{itemize}
+
+De seguida apresentamos o aspecto do ambiente gráfico:
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[height=170pt]{imagens/proti}\\
+\end{center}
+\caption{Aspecto do ambiente gráfico}
+\end{figure}
+
+O modo de texto apresenta-se de seguida:
+
+\begin{verbatim}
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        ~                                                        ~
+        ~                 Universidade do Minho                  ~
+        ~                        2005-2006                       ~
+        ~                                                        ~
+        ~          Trabalho de Programação Imperativa            ~
+        ~            e Paradigmas de Programação 2               ~
+        ~                        Melhoria                        ~
+        ~                                                        ~
+        ~              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~              ~
+        ~                                                        ~
+        ~          [1]  Ler Ficheiro                             ~
+        ~          [2]  Guardar PNM gerado                       ~
+        ~                                                        ~
+        ~          [3]  Visualizar PNM gerado                    ~
+        ~                                                        ~
+        ~          [4]  Inverter Horizontalmente PNM gerado      ~
+        ~          [5]  Inverter Verticalmente PNM gerado        ~
+        ~          [6]  Rodar PNM 90º para a direita             ~
+        ~          [7]  Rodar PNM 90º para a esquerda            ~
+        ~                                                        ~
+        ~          [8]  Converter PNM para PBM                   ~
+        ~          [9]  Converter PNM para PGM                   ~
+        ~          [10] Converter PNM para PPM                   ~
+        ~                                                        ~
+        ~                                                        ~
+        ~          [0]  Sair                                     ~
+        ~                                                        ~
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        Opção:
+\end{verbatim}
+
+%------------------------------------------------------------------------------------------------------------
+\chapter{Testes realizados}
+
+Esta secção é destinada a alguns testes que se efectuaram à aplicação.
+
+\section{Fase 1 e Fase 2}
+
+\begin{itemize}
+
+\item Teste 1 (leitura de ficheiro \pbm)\\
+Ficheiro de entrada convertido para a familia \pbm pelo ImageMagick: \textit{arvore.pbm}
+
+Resultado obtido:
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[height=260pt]{imagens/arvore}\\
+\end{center}
+\caption{Esquema representativo do algoritmo de rotação de uma imagem \pnm}
+\end{figure}
+
+\newpage
+\item Teste 2 (leitura de ficheiro \pgm)\\
+Ficheiro de entrada fornecido para testes pelo docente: \textit{rays.pgm}
+
+Resultado obtido:
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[height=300pt]{imagens/rays}
+\end{center}
+\caption{Imagem \textit{rays.pgm} em formato binário}
+\end{figure}
+
+\newpage
+\item Teste 3 (leitura de ficheiro \ppm)\\
+Ficheiro de entrada retirado da internet: \textit{marbles.ppm}
+
+Resultado obtido:
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[height=340pt]{imagens/marbles3}
+\end{center}
+\caption{Imagem \textit{marbles.ppm} em formato de texto}
+\end{figure}
+
+\newpage
+\item Teste 4 (conversão de familias e escrita do resultado em ficheiro)\\
+Ficheiro \textit{marbles.ppm} convertido para a familia \pgm e guardado pela aplicação:
+
+Resultado obtido:
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[height=340pt]{imagens/marbles4}
+\end{center}
+\caption{Imagem \textit{marbles.pgm} em formato de texto visualiada pelo \textit{ImageMagick}}
+\end{figure}
+
+\newpage
+\item Teste 5 (leitura de ficheiro \jpg)\\
+Ficheiro \jpg lido pela aplicação: \textit{as}
+
+
+Conversão para o formato \pnm:
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[height=125pt]{imagens/conv}
+\end{center}
+\caption{Conversão de uma imagem no formato \jpg/\gif para uma familia \pnm}
+\end{figure}
+
+Resultado obtido:
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[height=270pt]{imagens/erva}
+\end{center}
+\caption{leitura de uma imagem \jpg/\gif após conversão para a familia \pnm}
+\end{figure}
+
+\end{itemize}
+\newpage
+\section{Fase 3}
+
+\begin{itemize}
+
+\item Teste1\\
+Ficheiro disponibilizado na pagina da cadeira: \textit{O lencinho.txt}
+
+Resultado obtido:
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[height=360pt]{imagens/o_lencinho}
+\end{center}
+\caption{Pauta referente à música \textit{O lencinho}}
+\end{figure}
+
+\newpage
+\item Teste2\\
+Notas Músicais e sua identificação
+
+Resultado obtido:
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[height=146pt]{imagens/notas}
+\end{center}
+\caption{Pauta com as notas musicais e sua identificação}
+\end{figure}
+
+
+\item Teste3\\
+Ficheiro disponibilizado na pagina da cadeira: \textit{3bicos.txt}
+
+Resultado obtido:
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[height=200pt]{imagens/3bicos1}
+\end{center}
+\caption{Pauta referente à música \textit{O chapéu de 3 bicos}}
+\end{figure}
+
+\end{itemize}
+
+
+
+%------------------------------------------------------------------------------------------------------------
+\chapter{Software Utilizado}
+
+Nesta secção faz-se uma pequena listagem do software necessário para compilar o projecto com interface gráfico e do software auxiliar utilizado para a realização do projecto.
+
+\section{Requisitos de Software}
+
+Software extra necessário para compilar e consequentemente executar a aplicação:
+
+\begin{itemize}
+
+\item \textsf{Glib 2.0} - Pacote de estruturas de dados e funções para seu manuseio.\\
+Podemos ver a API desta biblioteca em: \url{http://developer.gnome.org/doc/API/glib/}.
+
+\item \textsf{LibGTK2.0} - Pacote de funções utilizado para criar o interface gráfico.\\
+Podemos ver a API em: \url{http://developer.gnome.org/doc/API/2.0/gtk/index.html}.
+
+\end{itemize}
+
+\section{Software auxiliar à realização do projecto}
+
+Software auxiliar para a realização do projecto:
+
+\begin{itemize}
+
+\item \textsf{DDD} - Versão gráfica do conhecido depurador \textsf{GDB}, utilizado para detecção de erros ao nível da memória.\\
+Podemos encontrar esta versão em: http://www.gnu.org/software/ddd/.
+
+\item \textsf{Valgrind} - Ferramenta extremamente útil para gerir a memória alocado pelo trabalho. Assim, foi possível corrigir alocações de memória em excesso, bem como violações de memória, entre outros bugs. Resta dizer que foi utilizada a sua versão gráfica \textsf{Valkyrie}, para facilitar a sua utilização.\\
+Esta ferramenta está disponível em: http://valgrind.org.
+
+\item \textsf{Glade 2} - Ferramenta utilizada para criar o modo gráfico implementado neste projecto.\\
+Esta ferramenta encontra-se disponivel em http://glade.gnome.org. 
+
+\end{itemize}
+
+%------------------------------------------------------------------------------------------------------------
+\chapter{Conclusão}
+
+\section{Análise critica}
+Este projecto foi de extrema relevância para um melhor entendimento da linguagem de programação \C. O trabalho possibilitou ao educando adquirir/consolidar os conhecimentos que possuia em relação à linguagem, além disso, contribiu para o enrequicimento da cultura geral do aprendizado, uma vez que este viu-se pressionado a pesquisar diversa informação sobre o formato de imagem \pnm e ainda sobre musica. Desta forma, o projecto tornou-se em certos momentos viciante, devido ao seu caracter utilitário e realistico.
+
+
+\section{Considerações finais}
+ 
+ O projecto implementa tudo o que é pedido e encontra-se até à data, segundo os testes realizados, a funcionar sem qualquer falhas. Apesar dos extras inseridos poder-se-ia futuramente implementar e melhorar:
+ 
+ \begin{itemize}
+ 
+ \item Adicionar a possibilidade de conversão entre familias no momento de guardar a imagem;
+ 
+ \item Melhor os algoritmos de rotação para que estes suportem o angulo de rotação;
+ 
+ \item Possibilitar a introdução de comentarios nas imagens por parte dos utilizadores, funcionalidade extremamente útil para "amantes" da fotografia;
+ 
+ \item Possibilitar a criação de pautas com diversas claves (e não só a de Sol).
+ 
+ \end{itemize}
+ 
+%--------------------------------------------------------------------------------- 
+\chapter{Bibliografia}
+[1] \textsf{L. Damas}. \textit{Linguagem C}, \textsf{FCA - Editora de Informática}. Janeiro 1999.
+
+[2] \textit{Fundamentos de Linguagem C}, Centro Tecnológico de MecaTrônica, Caxias do Sul, Novembro 1997.
+
+%---------------------------------------------------------------------------------
+\chapter{Referências Web}
+ 
+\begin{tabular}{ll} 
+[1] &\textsf{Motor de busca}\\
+    & \textit{\url{www.google.pt}} \\\\
+    
+[2] &\textsf{Encicliopédia Online}\\
+    & \textit{\url{www.wikipedia.com}}\\\\
+    
+[3] &\textsf{Formato de imagem \pbm}\\
+    & \textit{\url{http://www.sourcentral.org/man/debian-unstable/5+pbm}}\\\\
+    
+[4] &\textsf{Formato de imagem \pgm}\\
+    & \textit{\url{http://www.sourcentral.org/man/debian-unstable/5+pgm}}\\\\
+    
+[5] &\textsf{Formato de imagem \ppm}\\
+    & \textit{\url{http://www.sourcentral.org/man/debian-unstable/5+ppm}}\\\\
+    
+[6] &\textsf{Formato de imagem \pnm e familias}\\
+    & \textit{\url{mega.ist.utl.pt/~ic-cg/programa/livro/FormatosdeImagem.pdf}}\\\\
+    
+[7] &\textsf{Informação sobre pautas}\\
+    &\textit{\url{http://amilcarsoares.tripod.com/}}\\
+    & \textit{\url{http://www.myriad-online.com/resources/docs/melody/portugues/solfege.htm}}\\
+    & \textit{\url{http://www.angelfire.com/rnb/cifrasgospel/tm\_partituras\_teoria.htm}}\\ \\
+
+[8] & \textsf{Api da Glib}\\
+    & \textit{\url{http://developer.gnome.org/doc/API/glib/}}\\\\
+ 
+[9] & \textsf{Api da libGTK2.0}\\
+    & \textit{\url{http://developer.gnome.org/doc/API/2.0/gtk/index.html}}\\\\
+
+ 
+ \end{tabular}
+ 
+\appendix
+
+\chapter{Excertos de código}
+\label{codigo}
+
+\large{Ficheiro \textit{main.c}:}
+
+\footnotesize{\verbatiminput{../main.c}}
+
+\large Excerto do ficheiro \textit{pnm.c}:
+
+\footnotesize{\verbatiminput{pnm.txt}}
+ 
+\large Excerto do ficheiro \textit{pnm\_manipulation.c}:
+
+\footnotesize{\verbatiminput{pnm_m.txt}}
+
+\large Excerto do ficheiro \textit{pauta.c}:
+\footnotesize{\verbatiminput{pauta.txt}}
+
+
+\large Excerto do ficheiro \textit{trabalho.c}:
+\footnotesize{\verbatiminput{trabalho.txt}}
+
+
+\end{document}
